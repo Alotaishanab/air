@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Since the ONNX file is directly inside the 'avatar' directory, which is the same as BASE_DIR
-SENTIMENT_MODEL_PATH = os.path.join(BASE_DIR, 'sentiment_model.onnx')
+#SENTIMENT_MODEL_PATH = os.path.join(BASE_DIR, 'sentiment_model.onnx')
 
 
 # Set the path for the Google Application Credentials
@@ -61,8 +61,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     "user",
-    'sentiment',
+    
 ]
+
+#'sentiment',
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
