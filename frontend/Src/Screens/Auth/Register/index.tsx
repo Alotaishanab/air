@@ -23,16 +23,14 @@ export type Props = {
   navigation: any;
 };
 
-const API_ENDPOINT = 'http://172.20.10.2:8000/api/user/register/';
+const API_ENDPOINT = 'http://10.0.2.2:8000/api/user/register/';
 
 const Register = (props: any) => {
   const {Colors, isSystemTheme, systemTheme, colorTheme, setColorTheme} =
     useThemeContext();
 
   const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [co_password, setCo_Password] = useState('');
   const [tcAccepted, setTcAccepted] = useState(false);
@@ -54,8 +52,6 @@ const Register = (props: any) => {
     console.log('Request data:', {
       email: email,
       first_name: firstName,
-      last_name: lastName,
-      phone: phone,
       password: password,
       tc: tcAccepted,
     });
@@ -64,8 +60,6 @@ const Register = (props: any) => {
       const response = await axiosInstance.post('register/', {
         email: email,
         first_name: firstName,
-        last_name: lastName,
-        phone: phone,
         password: password,
         tc: tcAccepted,
       });

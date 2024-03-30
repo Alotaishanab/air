@@ -13,7 +13,6 @@ const getStyles = (Colors) => StyleSheet.create({
     backgroundColor: Colors.listColor,
     padding: 20,
     width: '100%', 
-    height: height * 0.9, // 90% of screen height
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -88,7 +87,7 @@ const getStyles = (Colors) => StyleSheet.create({
     color: Colors.inputColor,
   },
   mapContainer: {
-    height: 200,
+    height: hp('25%'),
     width: '100%',
   },
   map: {

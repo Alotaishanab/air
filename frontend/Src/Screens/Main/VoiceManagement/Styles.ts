@@ -17,6 +17,13 @@ const getStyles = (Colors) => StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  crossIcon: {
+    marginLeft: 320,
+    position:'absolute',
+    width: 24,
+    height: 24,
+  },
+
   scrollContainer: {
     marginTop: hp(2),
     marginBottom: hp("12%")

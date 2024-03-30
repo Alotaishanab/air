@@ -14,6 +14,10 @@ const styles = StyleSheet.create({
     flex: 1
     // flexGrow: 1,
   },
+  crossIcon: {
+    width: 24,
+    height: 24,
+  },
   mainContainer: {
     flex: 1,
     justifyContent: "center",

@@ -203,7 +203,7 @@ const DailyBrief: React.FC = () => {
   // Modify the useEffect hook
   useEffect(() => {
     fetchDataFromAPI();
-    const intervalId = setInterval(fetchDataFromAPI, 60000); // refresh every minute
+    const intervalId = setInterval(fetchDataFromAPI, 3000); // refresh every minute
   
     // Return a cleanup function that clears the interval when the component unmounts
     return () => clearInterval(intervalId);
@@ -283,23 +283,27 @@ const DailyBrief: React.FC = () => {
             <Text style={[styles.sectionTitle, {
               color: Colors.authTitleColor
             }]}>{"Your To Do List"}</Text>
-            <TouchableOpacity style={styles.viewAllButton} onPress={() => navigation.navigate('Phone')}>
-              <Text style={styles.viewAllText}>View All</Text>
-            </TouchableOpacity>
           </View>
 
-          <View style={{ marginTop: 15 }}>
-            {filterUpcomingItems(appointments) // Call the function with the appointments array
-              .map((item, index, arr) => (
-              <ToDoListItem
-                key={item.id.toString()}
-                title={item.Title} 
-                address={item.Add_Address} // Make sure the property name matches your data
-                isFirst={index === 0}
-                isLast={index === arr.length - 1}
-              />
-            ))}
-          </View>
+          {filterUpcomingItems(appointments).length === 0 ? (
+    // Display the "Add New" button if there are no ToDo items
+    <TouchableOpacity style={styles.addNewButton} onPress={navigateToAddAppointment}>
+      <Text style={styles.addNewButtonText}>Add New</Text>
+    </TouchableOpacity>
+  ) : (
+    <View style={{ marginTop: 15 }}>
+      {filterUpcomingItems(appointments)
+        .map((item, index, arr) => (
+          <ToDoListItem
+            key={item.id.toString()}
+            title={item.Title} 
+            address={item.Add_Address} 
+            isFirst={index === 0}
+            isLast={index === arr.length - 1}
+          />
+      ))}
+    </View>
+  )}
 
 
         </View>

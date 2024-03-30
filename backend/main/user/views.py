@@ -7,8 +7,19 @@ from user.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Add_Appointment
 from .serializers import AddAppointmentSerial
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
+class DeleteUserAccount(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        user.delete()  # This will delete the user and all related data if your models are set up with CASCADE delete
+        return Response({"message": "User account and all related data have been deleted."}, status=status.HTTP_204_NO_CONTENT)
+    
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {

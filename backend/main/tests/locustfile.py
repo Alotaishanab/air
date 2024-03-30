@@ -48,7 +48,7 @@ class UserTasks(SequentialTaskSet):
     def add_appointment(self):
         if self.token:
             self.client.post("/api/user/AddAppointment/", json={
-                "Title": f"Meeting with {random_string()}",
+                "Title": "Meeting with client",
                 "Add_Address": "123 Test St, Test City",
                 "Date": "2024-03-30",
                 "Time": "14:00"
@@ -62,12 +62,19 @@ class UserTasks(SequentialTaskSet):
     @task
     def delete_appointment(self):
         if self.token:
-            self.client.delete("/api/user/delete_appointment/1/", headers={"Authorization": f"Bearer {self.token}"})
+            # You will need to ensure that this appointment ID exists and is correct
+            appointment_id = 1
+            self.client.delete(f"/api/user/delete_appointment/{appointment_id}/", headers={"Authorization": f"Bearer {self.token}"})
+
+    @task
+    def delete_account(self):
+        if self.token:
+            self.client.delete("/api/user/delete_account/", headers={"Authorization": f"Bearer {self.token}"})
 
     @task
     def predict_sentiment(self):
-        if self.token:
-            self.client.post("/sentiment/predict/", json={'sentence': 'Your test sentence here.'}, headers={"Authorization": f"Bearer {self.token}"})
+        # This does not need authentication from the provided code
+        self.client.post("/sentiment/predict/", json={'sentence': 'I love sunny days!'})
 
 class WebsiteUser(HttpUser):
     tasks = [UserTasks]

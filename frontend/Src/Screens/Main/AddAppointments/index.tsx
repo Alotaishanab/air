@@ -1,198 +1,160 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarList, Calendar } from 'react-native-calendars';
-import { Modal, View, TouchableOpacity, Text, TextInput,Image } from 'react-native';
-import Ionic from 'react-native-vector-icons/Ionicons';
+import { Calendar, CalendarList } from 'react-native-calendars';
+import { Modal, View, TouchableOpacity, Text, TextInput, Image, Dimensions, ScrollView } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import getStyles from './Styles';
 import useThemeContext from '../../../Util/useThemeContext';
 import axiosInstance from '../../../../api/axiosInstance';
-import { Dimensions, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Images from '../../../Styles/Images';
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const AddAppointments = ({ isVisible, onClose }) => {
   const { Colors } = useThemeContext();
   const styles = getStyles(Colors);
-
- 
-  const screenWidth = Dimensions.get('window').width;
-  const screenHeight = Dimensions.get('window').height;
-
 
   // Initialize fields
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('');
   const [address, setAddress] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  const [region, setRegion] = useState(null);
+  const [region, setRegion] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+  const [marker, setMarker] = useState(null);
+
+  useEffect(() => {
+    if (address) {
+      searchLocation();
+    }
+  }, [address]);
+
+  const searchLocation = async () => {
+    try {
+      // Replace YOUR_API_KEY with your actual Google Maps Geocoding API key
+      const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=AIzaSyDw4oZC-w_viSxpA5v2KXTBEmZDWCD9shM`);
+      const result = response.data.results[0];
+      if (result) {
+        const { location } = result.geometry;
+        setRegion({
+          latitude: location.lat,
+          longitude: location.lng,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        });
+        setMarker({
+          latitude: location.lat,
+          longitude: location.lng,
+        });
+      }
+    } catch (error) {
+      console.error('Error searching for location:', error);
+    }
+  };
 
 
   const handleSave = async () => {
     // Prepare data for the API request
-    const data = {
-      Title: title,
-      Add_Address: address,
-      Date: selectedDate,
-      Time: time,
-    };
-  
+    const data = { Title: title, Add_Address: address, Date: selectedDate, Time: time };
+
     try {
       // Retrieve user token from AsyncStorage
       const userToken = await AsyncStorage.getItem('userToken');
-      if (!userToken) {
-        throw new Error('User token not found');
-      }
-  
+      if (!userToken) throw new Error('User token not found');
+
       // Include user token in the request headers
       const response = await axiosInstance.post('AddAppointment/', data, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+        headers: { Authorization: `Bearer ${userToken}` },
       });
-  
+
       // Alert the user that the appointment was saved successfully
       alert('New Appointment Added Successfully');
-  
-      // Handle any additional logic such as clearing form fields or closing modals
-      console.log('Saved:', JSON.stringify(response.data, null, 2));
       setTitle('');
       setSelectedDate('');
       setTime('');
       setAddress('');
       onClose(); // Close modal or perform other necessary actions
     } catch (error) {
-      // Handle error if the request fails
       console.error('Error saving appointment:', error);
     }
   };
-  
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="slide" transparent={true} visible={isVisible} onRequestClose={onClose}>
       <View style={styles.modalView}>
-        
-        <View style={styles.modalContent}>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={onClose}>
-              <Image source={Images.cross} style={{ width: 24,height: 24}} />          
-            </TouchableOpacity >
-              <Text style={[styles.modalTitle, { color: Colors.authTitleColor }]}>
-              New Appointment 
-            </Text>
-            <TouchableOpacity onPress={handleSave}>
-              <Image source={Images.arrowRight} style={{ width: 24,height: 24}} /> 
-            </TouchableOpacity>
-          </View>
-
-    {/* Title Input */}
-  <View style={styles.inputWrapper}>
-    <TextInput
-      style={[styles.textInput, { color: Colors.authTitleColor }]}
-      value={title}
-      onChangeText={setTitle}
-      placeholder="Enter appointment title"
-      placeholderTextColor={Colors.authTitleColor}
-    />
-  </View>
-
-    {/* Date Input */}
-<View style={styles.inputWrapper}>
-  <Calendar
-    // Horizontal and paging enabled
-    horizontal={true}
-    pagingEnabled={true}
-    calendarWidth={Dimensions.get('window').width }
-    firstDay={1}
-    style={{
-      width:screenWidth*0.9,
-    }}
-    onDayPress={(day) => {
-      setSelectedDate(day.dateString);
-    }}
-    pastScrollRange={0}
-    futureScrollRange={24}
-    scrollEnabled={true}
-    showScrollIndicator={true}
-    markedDates={{
-      [selectedDate]: {
-        selected: true,
-        marked: true,
-        selectedColor: Colors.accent,
-      },
-    }}
-    theme={{
-      backgroundColor: Colors.background,
-      calendarBackground: Colors.background,
-      todayTextColor: Colors.accent,
-      dayTextColor: Colors.authTitleColor,
-      textDisabledColor: Colors.textDisabled,
-      textDisabledColor: "#a9a9a9",
-      dotColor: Colors.accent,
-      selectedDotColor: '#ffffff',
-      arrowColor: Colors.accent,
-      monthTextColor: Colors.authTitleColor,
-      textDayFontFamily: 'Lexend-Deca',
-      textMonthFontFamily: 'Lexend-Deca',
-      textDayHeaderFontFamily: 'Lexend-Deca',
-      textDayFontSize: 16,
-      textMonthFontSize: 16,
-      textDayHeaderFontSize: 16,
-      arrowStyle: {
-        // Adjust the size of the arrows here
-        width: 50,
-        height: 50,
-      },
-    }}
-  />
-</View>
-
-    {/* Time Input */}
-    <View style={styles.inputWrapper}>
-      <TextInput
-        style={[styles.textInput, { color: Colors.authTitleColor }]}
-        value={time}
-        onChangeText={setTime}
-        placeholder="Enter time (HH:MM)"
-        placeholderTextColor={Colors.authTitleColor}
-      />
-      </View>
-
-      {/* Map View */}
-    <View style={styles.mapContainer}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 37.78825, // Replace with your desired region
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-      }}
-      // Enable user location
-      showsUserLocation={true}
-      // Add additional MapView configuration here if needed
-    />
-  </View>
-          
-          {/* Address Input */}
-          <View style={styles.inputWrapper}>
+        <ScrollView style={{ width: '100%' }}>
+          <View style={styles.modalContent}>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose}>
+                <Image source={Images.cross} style={{ width: 24, height: 24 }} />
+              </TouchableOpacity>
+              <Text style={[styles.modalTitle, { color: Colors.authTitleColor }]}>New Appointment</Text>
+              <TouchableOpacity onPress={handleSave}>
+                <Image source={Images.checkmark} style={{ width: 24, height: 24 }} />
+              </TouchableOpacity>
+            </View>
+  
+            {/* Map View */}
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              showsUserLocation={true}
+            />
+  
+            {/* Title Input */}
+            <TextInput
+              style={[styles.textInput, { color: Colors.authTitleColor }]}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Appointment Title"
+              placeholderTextColor={Colors.placeholderColor}
+            />
+  
+            {/* Date Picker */}
+            <Calendar
+              onDayPress={(day) => setSelectedDate(day.dateString)}
+              markedDates={{ [selectedDate]: { selected: true, marked: true } }}
+              theme={{
+                todayTextColor: Colors.accent,
+                textDayFontFamily: 'Lexend-Deca',
+                textMonthFontFamily: 'Lexend-Deca',
+                textDayHeaderFontFamily: 'Lexend-Deca',
+              }}
+            />
+  
+            {/* Time Input */}
+            <TextInput
+              style={[styles.textInput, { color: Colors.authTitleColor }]}
+              value={time}
+              onChangeText={setTime}
+              placeholder="Time (HH:MM)"
+              placeholderTextColor={Colors.placeholderColor}
+            />
+  
+            {/* Address Input */}
             <TextInput
               style={[styles.textInput, { color: Colors.authTitleColor }]}
               value={address}
               onChangeText={setAddress}
-              placeholder="Enter Address"
-              placeholderTextColor={Colors.authTitleColor}
+              placeholder="Address"
+              placeholderTextColor={Colors.placeholderColor}
             />
           </View>
-        </View>
+        </ScrollView>
       </View>
     </Modal>
-  );
+  );  
 };
 
 export default AddAppointments;

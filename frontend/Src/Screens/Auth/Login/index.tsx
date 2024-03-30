@@ -32,11 +32,12 @@ const Login = (props: any) => {
   const [remberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
-    
-
-        props.navigation.navigate('BottomNavigation', {screen: 'HomeTab'});
-      
+        props.navigation.navigate('BottomNavigation', { screen: 'HomeTab' });
   };
+  
+  
+  
+  
 
   return (
     <SafeAreaView

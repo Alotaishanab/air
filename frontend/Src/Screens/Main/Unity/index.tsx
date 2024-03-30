@@ -2,7 +2,6 @@ import {View, BackHandler, ActivityIndicator} from 'react-native';
 import React, {useRef, useEffect, useState} from 'react';
 import Images from '../../../Styles/Images';
 import styles from './Styles';
-import UnityView from '@azesmway/react-native-unity';
 import {useNavigation} from '@react-navigation/native';
 
 export default function Unity(): React.JSX.Element {

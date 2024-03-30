@@ -80,10 +80,7 @@ const HelpSupport = (props: any) => {
             <View style={Styles.headerWrapper}>
               <Text style={[Styles.headText, { color: Colors.authTitleColor }]}>{`Help & Support`}</Text>
               <TouchableOpacity onPress={() => { props.navigation.goBack() }}>
-                <Ionic
-                  name={"close"}
-                  size={28}
-                  style={{ color: Colors.headerColor }} />
+                <Image source={Images.cross} style={Styles.crossIcon} />
               </TouchableOpacity>
             </View>
 

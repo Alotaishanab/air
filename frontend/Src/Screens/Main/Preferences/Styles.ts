@@ -16,6 +16,17 @@ const getStyles = (Colors) => StyleSheet.create({
     marginTop: 20,
     marginBottom: 30,
   },
+  deleteAccountButton: {
+    marginTop: 10,
+    backgroundColor: '#ff3b30', // Red color for a destructive action
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  deleteAccountButtonText: {
+    color: '#ffffff', // White text color
+    fontWeight: 'bold',
+  },
   headerTitle: {
     fontSize: 34,
     fontFamily: 'Lexend-Bold',

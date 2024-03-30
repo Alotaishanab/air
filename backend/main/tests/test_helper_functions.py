@@ -1,6 +1,6 @@
-import unittest
-from app import prepare_inputs, softmax, tokenizer
+from django.test import TestCase
 import numpy as np
+from sentiment.views import prepare_inputs, softmax
 
 class TestHelperFunctions(unittest.TestCase):
     def test_softmax(self):

@@ -1,7 +1,8 @@
-import unittest
-from app import prepare_inputs, tokenizer 
+from django.test import TestCase
+# Adjust the import paths to where your `prepare_inputs` function and `tokenizer` are located in your Django app
+from sentiment.analysis import prepare_inputs, tokenizer
 
-class TestSentenceLengths(unittest.TestCase):
+class TestSentenceLengths(TestCase):
     def test_short_sentence(self):
         # Testing a short sentence
         short_sentence = "Hi."
@@ -25,6 +26,3 @@ class TestSentenceLengths(unittest.TestCase):
         sentence = "This is a test sentence."
         inputs = prepare_inputs(sentence)
         self.assertEqual(inputs['attention_mask'].shape[1], 63, "Attention mask should match the padded length of 63")
-
-if __name__ == '__main__':
-    unittest.main()

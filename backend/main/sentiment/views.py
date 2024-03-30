@@ -28,7 +28,7 @@ def translate_to_english(text):
     result = translate_client.translate(text, target_language='en')
     return result['translatedText']
 
-def prepare_inputs(sentence, max_length=63):
+def prepare_inputs(sentence, max_length=66):
     # Tokenize and ensure input is padded/truncated to 'max_length'
     inputs = tokenizer(sentence, return_tensors="np", padding='max_length', truncation=True, max_length=max_length)
     return inputs
@@ -40,7 +40,6 @@ def softmax(x):
 
 @api_view(['POST'])
 def predict(request):
-    # Your prediction logic adapted for Django
     if request.method == 'POST':
         data = JSONParser().parse(request)
         sentence = data.get('sentence', '')
@@ -55,4 +54,6 @@ def predict(request):
         ort_outs = session.run(None, ort_inputs)
         probabilities = softmax(ort_outs[0])[0]
 
+        
         return JsonResponse(probabilities.tolist(), safe=False)
+

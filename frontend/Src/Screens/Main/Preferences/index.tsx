@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,10 @@ import Images from '../../../Styles/Images';
 import getStyles from './Styles';
 import { useNavigation } from '@react-navigation/native';
 import useThemeContext from '../../../Util/useThemeContext';
+import axiosInstance from '../../../../api/axiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Login from '../../Auth/Login'
+import { Alert } from 'react-native';
 
 type PreferencesScreenProps = {};
 
@@ -33,6 +37,64 @@ const PreferencesScreen: React.FC<PreferencesScreenProps> = () => {
     theme: true,
     footer: false,
   });
+
+  // Add a useEffect to check if user info is being retrieved correctly
+  useEffect(() => {
+    const checkUserInfo = async () => {
+      const userInfo = await getUserInfo();
+      console.log('UserInfo on Preferences Screen:', userInfo);
+    };
+    checkUserInfo();
+  }, []);
+
+  const getUserInfo = async () => {
+    try {
+      const userInfoString = await AsyncStorage.getItem('userInfo');
+      if (userInfoString) {
+        const userInfo = JSON.parse(userInfoString);
+        return userInfo;
+      }
+      Alert.alert('Error', 'User data not found in AsyncStorage.');
+      return null;
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      Alert.alert('Error', 'An error occurred while fetching user info.');
+      return null;
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      const userInfo = await getUserInfo();
+      if (!userInfo || !userInfo.id) {
+        throw new Error('User ID not available');
+      }
+
+      const response = await axiosInstance.delete(`/delete_account/${userInfo.id}`);
+      if (response.status === 204) {
+        console.log('Account deleted successfully');
+        await AsyncStorage.clear();
+        navigation.navigate('Login'); // Ensure 'Login' is the correct route name
+      }
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      Alert.alert('Error', 'Failed to delete account. Please try again later.');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', onPress: deleteAccount, style: 'destructive' },
+      ]
+    );
+  };
+
+  
+  
 
   const { Colors, colorTheme, setColorTheme } = useThemeContext();
 
@@ -77,7 +139,7 @@ const PreferencesScreen: React.FC<PreferencesScreenProps> = () => {
         </View>
 
         <Text style={{ ...styles.description, color: Colors.authTitleColor }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        Customize your AIRA experience right here in Preferences! Choose your ideal theme to match your style and set up notifications to stay updated. It's all about making AIRA work best for you.
         </Text>
 
         <View style={styles.section}>
@@ -104,28 +166,6 @@ const PreferencesScreen: React.FC<PreferencesScreenProps> = () => {
             />
           </View>
 
-          <View style={styles.switchRow}>
-            <Text style={{ ...styles.switchText, color: Colors.authTitleColor }}>SMS Notifications</Text>
-            <Switch
-              style={switchSize}
-              thumbColor={getSwitchThumbColor(switches.mobileUpdates)}
-              trackColor={switchTrackColor}
-              value={switches.mobileUpdates}
-              onValueChange={() => toggleSwitch('mobileUpdates')}
-            />
-          </View>
-
-          <Text style={{ ...styles.sectionTitle, marginTop: 20, color: Colors.authTitleColor }}>
-            Title Here
-          </Text>
-          <View style={styles.switchRow}>
-            <Text style={{ ...styles.switchText, color: Colors.authTitleColor }}>Lorem Ipsum</Text>
-            <View style={styles.loremIpsumContainer}>
-              <Text style={{ ...styles.loremIpsumText, color: Colors.authTitleColor }}>Lorem Ipsum</Text>
-              <Image style={styles.arrowRight} source={Images.arrowRight} />
-            </View>
-          </View>
-
           <Text style={{ ...styles.sectionTitle, marginTop: 27, color: Colors.authTitleColor }}>
             App Appearance
           </Text>
@@ -147,6 +187,13 @@ const PreferencesScreen: React.FC<PreferencesScreenProps> = () => {
               Alternate between Dark and Light theme
             </Text>
           </View>
+          <Text style={{ ...styles.sectionTitle, marginTop: 20, color: Colors.authTitleColor }}>
+  Delete Account
+</Text>
+<TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteAccountButton}>
+  <Text style={styles.deleteAccountButtonText}>Delete Account</Text>
+</TouchableOpacity>
+
         </View>
       </ScrollView>
     </SafeAreaView>

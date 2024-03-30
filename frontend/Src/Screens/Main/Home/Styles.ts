@@ -271,7 +271,7 @@ const getStyles = (Colors) => StyleSheet.create({
         borderColor: Colors.white,
         borderStyle: 'dashed',
         borderRadius: 10,
-        paddingVertical: 20,
+        paddingVertical: 50,
         paddingHorizontal: 30,
         justifyContent: 'center',
         alignItems: 'center',

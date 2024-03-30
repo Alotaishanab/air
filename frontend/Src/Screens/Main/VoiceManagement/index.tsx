@@ -67,10 +67,7 @@ const VoiceManagement = (props: any) => {
                 color: Colors.authTitleColor
               }]}>{`Voice Clone Management`}</Text>
               <TouchableOpacity onPress={() => { props.navigation.goBack() }}>
-                <Ionic
-                  name={"close"}
-                  size={28}
-                  style={{ color: Colors.headerColor }} />
+                <Image source={Images.cross} style={styles.crossIcon} />
               </TouchableOpacity>
             </View>
 
@@ -96,11 +93,7 @@ const VoiceManagement = (props: any) => {
                   }]}>
                     <View style={styles.listInner}>
                       <View style={styles.listLeftWrap}>
-                        <Ionic
-                          name={"play-circle-outline"}
-                          size={hp(4.2)}
-                          style={{ color: Colors.playColor }} />
-
+                        <Image source={Images.play} style={styles.crossIcon} />
                         <View style={styles.seperateWrap}>
                           <Text style={[styles.listTitle, {
                             color: Colors.authTitleColor
